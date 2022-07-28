@@ -72,6 +72,17 @@ inputs:
     description: Add repository path as safe.directory for Git global config by running `git config --global --add safe.directory <path>`
     default: true
 runs:
-  using: node16
-  main: dist/index.js
-  post: dist/index.js
+  # https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+  using: composite
+  steps:
+    - name: Scan docker image with Twistcli with given parameters
+      # Avoid "Required property is missing: shell"
+      # https://stackoverflow.com/questions/71041836/github-actions-required-property-is-missing-shell/71042698#71042698
+      shell: bash
+      run: |
+        echo "Executing command docker run --rm -u root -v $(pwd):$(pwd) -w $(pwd) -v /var/run/docker.sock:/var/run/docker.sock -e JOB_NAME=${{ inputs.prisma-cloud-job-name }} -e JOB_URL=${{ inputs.prisma-cloud-job-url }} ${{ inputs.prisma-cloud-twistcli-docker-image }} images scan --address ${{ inputs.prisma-cloud-url }} --project ${{ inputs.prisma-cloud-project }} --user ${{ inputs.prisma-cloud-username }} --password ******** --details --output-file twistcli-output-results.json ${{ inputs.docker-image-tag-to-scan }}"
+
+    - name: Show th internal resource
+      shell: bash
+      run: |
+        cat ./adrs/0153-checkout-v2.md
