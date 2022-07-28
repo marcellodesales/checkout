@@ -80,9 +80,59 @@ runs:
       # https://stackoverflow.com/questions/71041836/github-actions-required-property-is-missing-shell/71042698#71042698
       shell: bash
       run: |
+        cat <<EOT >> docker-compose-blackduck-detect-sca.yaml
+        version: "3.9"
+
+        #### $ docker run --rm -e PIPENV_SYNC_CMD="pipenv sync -v"
+        #              -v $(pwd):$(pwd) -w $(pwd) -v ./build/pip-cache:/root/.local
+        #              seceng-devsecops-platform.docker.artifactory.company.com/devsecops/client/runtime/blackduck/7-python-3.9-05ed1a9203b624b30c49ba387f3d2cb73d874746
+        #      -de --blackduck.url= --blackduck.api.token= --detect.project.name= --detect.project.version.name=
+        #       --logging.level.com.synopsys.integration=TRACE --detect.blackduck.signature.scanner.paths= --detect.source.path=$(pwd)
+        ####
+        services:
+
+          sec-verify-sca-blackduck-detect:
+            image: seceng-devsecops-platform.docker.artifactory.company.com/devsecops/client/runtime/blackduck:7-python-3.9
+            container_name: devsecops-client-blackduck-sca
+            environment:
+              SECENG_DEVSECOPS_CLIENT_BLACKDUCK_HOST: ${SECENG_DEVSECOPS_CLIENT_BLACKDUCK_HOST}
+              SECENG_DEVSECOPS_CLIENT_BLACKDUCK_TOKEN: ${SECENG_DEVSECOPS_CLIENT_BLACKDUCK_TOKEN}
+              SECENG_DEVSECOPS_CLIENT_BLACKDUCK_PROJECT_NAME: ${SECENG_DEVSECOPS_CLIENT_BLACKDUCK_PROJECT_NAME}
+              SECENG_DEVSECOPS_CLIENT_BLACKDUCK_PROJECT_VERSION: ${SECENG_DEVSECOPS_CLIENT_BLACKDUCK_PROJECT_VERSION}
+              #DETECT_VERSION: "6"
+
+              # Just make it build at .venv dir, but it may fail in Blackduck
+              #PIPENV_VENV_IN_PROJECT: "1"
+
+              # DO NOT add dev, only if required https://stackoverflow.com/questions/53452152/what-is-pipenv-dev-packages-section-for/53452214#53452214
+              PIPENV_SYNC_CMD: "pipenv sync -v"
+
+            working_dir: /seceng/devsecops/repo/git.company.com/S2E2/VVM_tools
+            volumes:
+              - ./:/seceng/devsecops/repo/git.company.com/S2E2/VVM_tools
+              - ./build/reports/sec:/root/blackduck/runs
+              - ./build/pip-cache:/root/.local/
+
+            command:
+              - -de
+              - --blackduck.url=${SECENG_DEVSECOPS_CLIENT_BLACKDUCK_HOST}
+              - --blackduck.api.token=${SECENG_DEVSECOPS_CLIENT_BLACKDUCK_TOKEN}
+              - --detect.project.name=${SECENG_DEVSECOPS_CLIENT_BLACKDUCK_PROJECT_NAME}
+              - --detect.project.version.name=${SECENG_DEVSECOPS_CLIENT_BLACKDUCK_PROJECT_VERSION}
+
+              # https://blackducksoftware.github.io/synopsys-detect/6.3.0/properties/detectors/pip/#pip-include-only-project-tree
+              #- --detect.pip.only.project.tree=true
+              - --logging.level.com.synopsys.integration=TRACE
+
+              # https://blackducksoftware.github.io/synopsys-detect/6.3.0/properties/configuration/signature%20scanner/#signature-scanner-target-paths
+              #- --detect.blackduck.signature.scanner.paths=scripts,tests,workflow,workflow_logic
+
+              - --detect.source.path=/seceng/devsecops/repo/git.company.com/S2E2/VVM_tools
+        EOT
+      
         echo "Executing command docker run --rm -u root -v $(pwd):$(pwd) -w $(pwd) -v /var/run/docker.sock:/var/run/docker.sock -e JOB_NAME=${{ inputs.prisma-cloud-job-name }} -e JOB_URL=${{ inputs.prisma-cloud-job-url }} ${{ inputs.prisma-cloud-twistcli-docker-image }} images scan --address ${{ inputs.prisma-cloud-url }} --project ${{ inputs.prisma-cloud-project }} --user ${{ inputs.prisma-cloud-username }} --password ******** --details --output-file twistcli-output-results.json ${{ inputs.docker-image-tag-to-scan }}"
 
-    - name: Show th internal resource
+    - name: Show created file
       shell: bash
       run: |
-        cat ./adrs/0153-checkout-v2.md
+        cat docker-compose-blackduck-detect-sca.yaml
