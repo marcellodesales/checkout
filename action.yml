@@ -71,9 +71,10 @@ inputs:
   set-safe-directory:
     description: Add repository path as safe.directory for Git global config by running `git config --global --add safe.directory <path>`
     default: true
-
-env:
-  TESTING: 12345
+ 
+outputs:
+  a:
+  b:
 
 runs:
   # https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
@@ -85,6 +86,7 @@ runs:
       shell: bash
       run: |
         echo "Testing here is the ${TESTING}"
+        echo "::set-output name=a::$1"
 
     - name: Scan docker image with Twistcli with given parameters
       # Avoid "Required property is missing: shell"
@@ -94,6 +96,7 @@ runs:
         echo "Testing here is the ${TESTING}"
         cat <<EOT >> docker-compose-blackduck-detect-sca.yaml
         version: "3.9"
+        echo "::set-output name=b::$2"
 
         #### $ docker run --rm -e PIPENV_SYNC_CMD="pipenv sync -v"
         #              -v $(pwd):$(pwd) -w $(pwd) -v ./build/pip-cache:/root/.local
