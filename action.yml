@@ -74,7 +74,10 @@ inputs:
  
 outputs:
   a:
+    description: "The scan results file a"
   b:
+    description: "The scan results file b"
+
 
 runs:
   # https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
