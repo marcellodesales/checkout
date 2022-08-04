@@ -163,5 +163,5 @@ runs:
     - name: Debug all
       shell: bash
       run: |
-        echo ${{toJSON(steps)}}
+        echo "${{toJSON(steps)}}"
         echo "${{steps.set-a.outputs.a}} AND AND AND ${{steps.set-b.outputs.b}}"
