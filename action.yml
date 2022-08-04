@@ -72,18 +72,21 @@ inputs:
     description: Add repository path as safe.directory for Git global config by running `git config --global --add safe.directory <path>`
     default: true
  
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#example-declaring-outputs-for-composite-actions
 outputs:
   a:
     description: "The scan results file a"
+    value: ${{ steps.set-a.outputs.random-id }}
   b:
     description: "The scan results file b"
-
+    value: ${{ steps.set-b.outputs.random-id }}
 
 runs:
   # https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
   using: composite
   steps:
     - name: Envs envs
+      id: set-a
       # Avoid "Required property is missing: shell"
       # https://stackoverflow.com/questions/71041836/github-actions-required-property-is-missing-shell/71042698#71042698
       shell: bash
@@ -92,6 +95,7 @@ runs:
         echo "::set-output name=a::111111"
 
     - name: Scan docker image with Twistcli with given parameters
+      id: set-b
       # Avoid "Required property is missing: shell"
       # https://stackoverflow.com/questions/71041836/github-actions-required-property-is-missing-shell/71042698#71042698
       shell: bash
