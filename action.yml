@@ -104,8 +104,6 @@ runs:
         cat <<EOT >> docker-compose-blackduck-detect-sca.yaml
         version: "3.9"
 
-        echo "::set-output name=b::222222"
-
         #### $ docker run --rm -e PIPENV_SYNC_CMD="pipenv sync -v"
         #              -v $(pwd):$(pwd) -w $(pwd) -v ./build/pip-cache:/root/.local
         #              seceng-devsecops-platform.docker.artifactory.company.com/devsecops/client/runtime/blackduck/7-python-3.9-05ed1a9203b624b30c49ba387f3d2cb73d874746
@@ -154,6 +152,7 @@ runs:
         EOT
       
         echo "Executing command docker run --rm -u root -v $(pwd):$(pwd) -w $(pwd) -v /var/run/docker.sock:/var/run/docker.sock -e JOB_NAME=${{ inputs.prisma-cloud-job-name }} -e JOB_URL=${{ inputs.prisma-cloud-job-url }} ${{ inputs.prisma-cloud-twistcli-docker-image }} images scan --address ${{ inputs.prisma-cloud-url }} --project ${{ inputs.prisma-cloud-project }} --user ${{ inputs.prisma-cloud-username }} --password ******** --details --output-file twistcli-output-results.json ${{ inputs.docker-image-tag-to-scan }}"
+        echo "::set-output name=b::222222"
 
     - name: Show created file
       shell: bash
