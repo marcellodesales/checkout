@@ -89,7 +89,7 @@ runs:
       shell: bash
       run: |
         echo "Testing here is the ${TESTING}"
-        echo "::set-output name=a::$1"
+        echo "::set-output name=a::1"
 
     - name: Scan docker image with Twistcli with given parameters
       # Avoid "Required property is missing: shell"
@@ -99,7 +99,7 @@ runs:
         echo "Testing here is the ${TESTING}"
         cat <<EOT >> docker-compose-blackduck-detect-sca.yaml
         version: "3.9"
-        echo "::set-output name=b::$2"
+        echo "::set-output name=b::2"
 
         #### $ docker run --rm -e PIPENV_SYNC_CMD="pipenv sync -v"
         #              -v $(pwd):$(pwd) -w $(pwd) -v ./build/pip-cache:/root/.local
