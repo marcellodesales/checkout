@@ -72,16 +72,24 @@ inputs:
     description: Add repository path as safe.directory for Git global config by running `git config --global --add safe.directory <path>`
     default: true
 
+env:
+  TESTING: 12345
+
 runs:
   # https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
   using: composite
   steps:
+    - name: Envs envs
+      # Avoid "Required property is missing: shell"
+      # https://stackoverflow.com/questions/71041836/github-actions-required-property-is-missing-shell/71042698#71042698
+      shell: bash
+      run: |
+        echo "Testing here is the ${TESTING}"
+
     - name: Scan docker image with Twistcli with given parameters
       # Avoid "Required property is missing: shell"
       # https://stackoverflow.com/questions/71041836/github-actions-required-property-is-missing-shell/71042698#71042698
       shell: bash
-      env:
-        TESTING: 12345
       run: |
         echo "Testing here is the ${TESTING}"
         cat <<EOT >> docker-compose-blackduck-detect-sca.yaml
