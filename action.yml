@@ -164,4 +164,4 @@ runs:
     - name: Debug all
       shell: bash
       run: |
-        echo "${{steps.set-a.outputs.a}} AND AND AND ${{steps.set-b.outputs.b}}
+        echo "${{steps.set-a.outputs.a}} AND AND AND ${{steps.set-b.outputs.b}}"
