@@ -159,3 +159,9 @@ runs:
       shell: bash
       run: |
         cat docker-compose-blackduck-detect-sca.yaml
+
+
+    - name: Debug all
+      shell: bash
+      run: |
+        echo "${{steps.set-a.outputs.a}} AND AND AND ${{steps.set-b.outputs.b}}
